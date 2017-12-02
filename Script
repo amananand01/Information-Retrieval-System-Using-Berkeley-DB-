@@ -1,0 +1,30 @@
+#!/bin/bash
+
+echo 'Phase 2 Started'
+
+# Sort all Files
+sort recs.txt -u >n_recs.txt
+sort terms.txt -u >n_terms.txt
+sort years.txt -u >n_years.txt
+
+# Rename the new files
+mv n_terms.txt terms.txt
+mv n_years.txt years.txt
+mv n_recs.txt recs.txt
+
+# parse the file and create a new file with keys in one line and values in next
+perl break.pl < terms.txt > n_terms.txt
+perl break.pl < years.txt > n_years.txt
+perl break.pl < recs.txt > n_recs.txt
+
+# Rename the new files
+mv n_terms.txt terms.txt
+mv n_years.txt years.txt
+mv n_recs.txt recs.txt
+
+# create the database files
+db_load -c duplicates=1 -f years.txt -T -t btree ye.idx
+db_load -c duplicates=1 -f terms.txt -T -t btree te.idx
+db_load -c duplicates=1 -f recs.txt -T -t hash re.idx
+
+echo 'Phase 2 Done'
